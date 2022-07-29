@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Dll.cpp" />
+    <ClCompile Include="NiVirtualCam.cpp" />
+    <ClCompile Include="d3d9_screen_capture.cc">
+      <Filter>dx</Filter>
+    </ClCompile>
+    <ClCompile Include="window_helper.cc">
+      <Filter>dx</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="NiVirtualCam.h" />
+    <ClInclude Include="resource.h">
+      <Filter>res</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d9_screen_capture.h">
+      <Filter>dx</Filter>
+    </ClInclude>
+    <ClInclude Include="screen_capture.h">
+      <Filter>dx</Filter>
+    </ClInclude>
+    <ClInclude Include="window_helper.h">
+      <Filter>dx</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NiVirtualCam.def" />
+    <None Include="ErrorBitmap.bin">
+      <Filter>res</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="res">
+      <UniqueIdentifier>{5d4bebb0-2094-40c4-a58f-35229d49eab2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dx">
+      <UniqueIdentifier>{051103cf-dbfa-42ab-bab0-b21a1341428b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NiVirtualCamFilter.rc">
+      <Filter>res</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
