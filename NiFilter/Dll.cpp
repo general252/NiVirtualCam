@@ -31,9 +31,11 @@
 #pragma comment(lib, "oleaut32")
 
 #ifdef _DEBUG
-#pragma comment(lib, "strmbasd")
+//#pragma comment(lib, "strmbasd")
+#pragma comment(lib, "C:/Users/tony/Desktop/cam/pushsource/baseclasses/x64/Debug/strmbasd.lib")
 #else
-    #pragma comment(lib, "strmbase")
+
+#pragma comment(lib, "C:/Users/tony/Desktop/cam/samples/baseclasses/x64/Release/strmbase.lib")
 #endif
 
 
@@ -106,15 +108,15 @@ STDAPI RegisterFilters(BOOL bRegister)
 	char achTemp[MAX_PATH];
 	ASSERT(g_hInst != nullptr);
 
-	if (0 == GetModuleFileNameA(g_hInst, achTemp, sizeof(achTemp)))
+	if (0 == GetModuleFileNameA(g_hInst, achTemp, sizeof(achTemp))) {
 		return AmHresultFromWin32(GetLastError());
+	}
 
 	MultiByteToWideChar(CP_ACP, 0L, achTemp, lstrlenA(achTemp) + 1,
 	                    achFileName, NUMELMS(achFileName));
 
 	hr = CoInitialize(nullptr);
-	if (bRegister)
-	{
+	if (bRegister) {
 		hr = AMovieSetupRegisterServer(CLSID_NiVirtualCam, L"OpenNi Virtual Camera", achFileName, L"Both", L"InprocServer32");
 	}
 
@@ -143,12 +145,14 @@ STDAPI RegisterFilters(BOOL bRegister)
 
 		// release interface
 		//
-		if (fm)
+		if (fm) {
 			fm->Release();
+		}
 	}
 
-	if (SUCCEEDED(hr) && !bRegister)
+	if (SUCCEEDED(hr) && !bRegister) {
 		hr = AMovieSetupUnregisterServer(CLSID_NiVirtualCam);
+	}
 
 	CoFreeUnusedLibraries();
 	CoUninitialize();

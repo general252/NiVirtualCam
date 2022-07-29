@@ -21,8 +21,6 @@
 
 EXTERN_C const GUID CLSID_NiVirtualCam;
 
-class CKCamStream;
-
 class CKCam : public CSource
 {
 public:
@@ -77,12 +75,39 @@ public:
 	CKCamStream(HRESULT* phr, CKCam* pParent, LPCWSTR pPinName);
 	~CKCamStream();
 
+	//////////////////////////////////////////////////////////////////////////
+	// CSourceStream
+	//////////////////////////////////////////////////////////////////////////
+
+	/*FillBuffer接口用于填写每一帧的音视频数据
+	* 这个接口一般先调用IMediaSample::GetPointer获得新一帧数据的缓冲，然后把数据写入这个缓冲。
+	* 接着调用IMediaSample::SetTime设置帧的时间戳。最后调用IMediaSample::SetSyncPoint设置该帧是否为关键帧。
+	* 对于提供非压缩数据的source filter，每一帧都应该设置为TRUE。 https://www.jianshu.com/p/42489956f866
+	*/ 
 	HRESULT FillBuffer(IMediaSample* pms) override;
+	/* DecideBufferSize接口用于设置需要多大的buffer
+	* CSourceStream类的父类CBasePin中有个m_mt的成员保存了GetMediaType设置的媒体格式。
+	* 一份buffer的大小通常就是GetMediaType中设置的pmt->lSampleSize。一般用一份buffer也够了。
+	*/
 	HRESULT DecideBufferSize(IMemAllocator* pIMemAlloc, ALLOCATOR_PROPERTIES* pProperties) override;
-	HRESULT CheckMediaType(const CMediaType* pMediaType) override;
+	// GetMediaType接口用于返回pin接受的媒体格式
 	HRESULT GetMediaType(int iPosition, CMediaType* pmt) override;
 	HRESULT SetMediaType(const CMediaType* pmt) override;
 	HRESULT OnThreadCreate(void) override;
+	/*
+	* 如果source filter的下游是vmr7（vmr9测试没有这个问题），还需要多实现两个接口
+	* HRESULT CheckMediaType(const CMediaType *pMediaType)
+	* STDMETHODIMP Notify(IBaseFilter *pSelf, Quality q)
+	* 
+	* vmr7要自己实现CheckMediaType的原因是，
+	  如果不重载CheckMediaType，DecideBufferSize函数中调用IMemAllocator::SetProperties会报错，
+	  返回E_FAIL，从而导致FillBuffer不会被调用（更正，如果IMemAllocator::SetProperties，则DecideBufferSize也应该报错，这样仍可以运行）
+
+	  上面的解释是，VMR/EVR filter所需要的buffer stride会跟source filter GetMediaType设置的图像宽度不一致（显存需要字节对齐），
+	  导致格式发生改变。当VMR/EVR改变格式数据的时候，它会调用IPin::QueryAccept询问上游filter是否接受这个格式。
+	  CSourceStream实现的CheckMediaType是这样的
+	*/
+	HRESULT CheckMediaType(const CMediaType* pMediaType) override;
 
 private:
 	CKCam* m_pParent;

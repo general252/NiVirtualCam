@@ -147,9 +147,9 @@ HRESULT CKCamStream::FillBuffer(IMediaSample* pms)
 			if (fileHandle == nullptr && !badServer)
 			{
 				badServer = true;
-				MessageBox(nullptr,
-				           L"Can not connect to the Server; please make sure that NiVirtualCam Controller Application is running. We keep trying until you open it.",
-				           L"Connection failed", MB_ICONWARNING);
+				//MessageBox(nullptr,
+				           //L"Can not connect to the Server; please make sure that NiVirtualCam Controller Application is running. We keep trying until you open it.",
+				           //L"Connection failed", MB_ICONWARNING);
 			}
 		}
 		else
@@ -368,7 +368,8 @@ HRESULT CKCamStream::GetMediaType(int iPosition, CMediaType* pmt)
 		return S_OK;
 	}
 
-	DECLARE_PTR(VIDEOINFOHEADER, pvi, pmt->AllocFormatBuffer(sizeof(VIDEOINFOHEADER)));
+	VIDEOINFOHEADER* pvi = (VIDEOINFOHEADER*)(pmt->AllocFormatBuffer(sizeof(VIDEOINFOHEADER)));
+	//DECLARE_PTR(VIDEOINFOHEADER, pvi, pmt->AllocFormatBuffer(sizeof(VIDEOINFOHEADER)));
 	ZeroMemory(pvi, sizeof(VIDEOINFOHEADER));
 
 	pvi->bmiHeader.biCompression = BI_RGB;
@@ -401,8 +402,10 @@ HRESULT CKCamStream::GetMediaType(int iPosition, CMediaType* pmt)
 HRESULT CKCamStream::CheckMediaType(const CMediaType* pMediaType)
 {
 	VIDEOINFOHEADER* pvi = (VIDEOINFOHEADER *)(pMediaType->Format());
-	if (*pMediaType != m_mt)
+	if (*pMediaType != m_mt) {
 		return E_INVALIDARG;
+	}
+
 	return S_OK;
 } // CheckMediaType
 
@@ -440,15 +443,15 @@ HRESULT CKCamStream::OnThreadCreate()
 HRESULT STDMETHODCALLTYPE CKCamStream::SetFormat(AM_MEDIA_TYPE* pmt)
 {
 	DECLARE_PTR(VIDEOINFOHEADER, pvi, m_mt.pbFormat);
-	if (!pmt)
-	{
+	if (!pmt) {
 		return VFW_E_INVALIDMEDIATYPE;
 	}
+
 	m_mt = *pmt;
 	IPin* pin;
 	ConnectedTo(&pin);
-	if (pin)
-	{
+
+	if (pin) {
 		IFilterGraph* pGraph = m_pParent->GetGraph();
 		pGraph->Reconnect(this);
 	}
