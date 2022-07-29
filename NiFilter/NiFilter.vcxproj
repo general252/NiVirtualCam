@@ -19,16 +19,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="d3d9_screen_capture.cc" />
     <ClCompile Include="Dll.cpp" />
     <ClCompile Include="NiVirtualCam.cpp" />
+    <ClCompile Include="window_helper.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ErrorBitmap.bin" />
     <None Include="NiVirtualCam.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="d3d9_screen_capture.h" />
     <ClInclude Include="NiVirtualCam.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="screen_capture.h" />
+    <ClInclude Include="window_helper.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NiVirtualCamFilter.rc" />
@@ -205,7 +210,7 @@ EXIT 0</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>C:\Users\tony\Desktop\cam\samples\baseclasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\tony\Desktop\cam\samples\baseclasses;libyuv;libyuv\libyuv;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
