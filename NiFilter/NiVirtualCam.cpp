@@ -138,62 +138,65 @@ bool errorBitmapLoaded = errorBitmapSize > 0;
 HRESULT CKCamStream::FillBuffer(IMediaSample* pms)
 {
 	// Init setting object
-	if (fileHandle == nullptr)
-	{
-		fileHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, L"OpenNiVirtualCamFrameData");
+	if (0) {
 		if (fileHandle == nullptr)
 		{
-			//fileHandle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, FILE_MAP_ALL_ACCESS, 0, fileSize, L"OpenNiVirtualCamFrameData");
-			if (fileHandle == nullptr && !badServer)
+			fileHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, L"OpenNiVirtualCamFrameData");
+			if (fileHandle == nullptr)
 			{
-				badServer = true;
-				//MessageBox(nullptr,
-				           //L"Can not connect to the Server; please make sure that NiVirtualCam Controller Application is running. We keep trying until you open it.",
-				           //L"Connection failed", MB_ICONWARNING);
+				//fileHandle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, FILE_MAP_ALL_ACCESS, 0, fileSize, L"OpenNiVirtualCamFrameData");
+				if (fileHandle == nullptr && !badServer)
+				{
+					badServer = true;
+					//MessageBox(nullptr,
+							   //L"Can not connect to the Server; please make sure that NiVirtualCam Controller Application is running. We keep trying until you open it.",
+							   //L"Connection failed", MB_ICONWARNING);
+				}
 			}
+			else
+				badServer = false;
 		}
-		else
-			badServer = false;
-	}
 
-	if (fileHandle != nullptr && file == nullptr)
-	{
-		file = MapViewOfFile(fileHandle, FILE_MAP_ALL_ACCESS, 0, 0, fileSize);
-		if (file == nullptr)
+		if (fileHandle != nullptr && file == nullptr)
 		{
-			if (!badServer)
+			file = MapViewOfFile(fileHandle, FILE_MAP_ALL_ACCESS, 0, 0, fileSize);
+			if (file == nullptr)
 			{
-				badServer = true;
-				TCHAR msg[100];
-				wsprintf(msg, L"Error: #%d", GetLastError());
-				MessageBox(nullptr, msg, L"Connection failed", MB_ICONWARNING);
+				if (!badServer)
+				{
+					badServer = true;
+					TCHAR msg[100];
+					wsprintf(msg, L"Error: #%d", GetLastError());
+					MessageBox(nullptr, msg, L"Connection failed", MB_ICONWARNING);
+				}
 			}
+			else
+				badServer = false;
 		}
-		else
-			badServer = false;
-	}
 
-	if (fileHandle != nullptr && file != nullptr)
-	{
-		char* serverByte = ((char*)file + fileSize - 1);
-		if (*serverByte == 1)
+		if (fileHandle != nullptr && file != nullptr)
 		{
-			badServer = false;
-			serverDown = 0;
-			*serverByte = 0;
-		}
-		else if (!badServer)
-		{
-			if (serverDown > 1800) // 1 min of inactivity from server
+			char* serverByte = ((char*)file + fileSize - 1);
+			if (*serverByte == 1)
 			{
-				badServer = true;
-				MessageBox(nullptr,
-				           L"Connection to the server timed out; please make sure that NiVirtualCam Controller Application is running and active. We keep trying until you solve this problem.",
-				           L"Connection timed out", MB_ICONWARNING);
+				badServer = false;
+				serverDown = 0;
+				*serverByte = 0;
 			}
-			serverDown++;
+			else if (!badServer)
+			{
+				if (serverDown > 1800) // 1 min of inactivity from server
+				{
+					badServer = true;
+					MessageBox(nullptr,
+						L"Connection to the server timed out; please make sure that NiVirtualCam Controller Application is running and active. We keep trying until you solve this problem.",
+						L"Connection timed out", MB_ICONWARNING);
+				}
+				serverDown++;
+			}
 		}
 	}
+	Sleep(5);
 
 	// Updating frame data and frame rate
 	REFERENCE_TIME rtNow;
@@ -476,7 +479,7 @@ HRESULT STDMETHODCALLTYPE CKCamStream::GetStreamCaps(int iIndex, AM_MEDIA_TYPE**
 	*pmt = CreateMediaType(&m_mt);
 	DECLARE_PTR(VIDEOINFOHEADER, pvi, (*pmt)->pbFormat);
 
-	iIndex++;
+	//iIndex++;
 
 	pvi->bmiHeader.biCompression = BI_RGB;
 	pvi->bmiHeader.biBitCount = 24;

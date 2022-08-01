@@ -175,3 +175,5 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 {
 	return DllEntryPoint((HINSTANCE)(hModule), dwReason, lpReserved);
 }
+
+// obs-virtual-cam https://github.dev/Fenrirthviti/obs-virtual-cam/tree/master/src/virtual-source
